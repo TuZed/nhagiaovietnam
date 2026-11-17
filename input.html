@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sổ Ủng Hộ 20/11 — Quản trị</title>
+  <meta name="description" content="Trang quản trị: thêm, xóa và xuất dữ liệu ủng hộ 20/11.">
+  <meta name="theme-color" content="#fff7ef">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="./styles.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("so-ghi-nhan.theme");
+        if (t !== "light" && t !== "dark") {
+          t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    })();
+  </script>
+  <script src="./scripts.js" defer></script>
+</head>
+<body class="page page--admin" data-page="input">
+
+  <div class="bg-blobs" aria-hidden="true">
+    <span class="bg-blobs__a"></span>
+    <span class="bg-blobs__b"></span>
+    <span class="bg-blobs__c"></span>
+  </div>
+
+  <canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <header class="admin-header">
+    <div class="admin-header__inner">
+      <a class="brand" href="./index.html">
+        <span class="brand__emoji" aria-hidden="true">🎁</span>
+        <span class="brand__text">Sổ Ủng Hộ 20/11</span>
+      </a>
+      <div class="admin-header__actions">
+        <a class="icon-button" href="./index.html"
+           aria-label="Xem bảng vinh danh" title="Xem bảng">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <path d="M9 21V13h6v8"></path>
+          </svg>
+        </a>
+        <button class="icon-button" id="themeToggle" type="button"
+                aria-pressed="false" aria-label="Chuyển sang giao diện tối" title="Đổi giao diện">
+          <svg class="icon icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+          <svg class="icon icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="admin-main" id="main">
+
+    <div class="stat-bar">
+      <span class="stat-bar__item">
+        <span class="stat-bar__label">Tổng</span>
+        <span class="stat-bar__value stat-bar__value--money" id="adminTotal">0&nbsp;₫</span>
+      </span>
+      <span class="stat-bar__sep" aria-hidden="true"></span>
+      <span class="stat-bar__item">
+        <span class="stat-bar__label">Người</span>
+        <span class="stat-bar__value stat-bar__value--count" id="adminCount">0</span>
+      </span>
+    </div>
+
+    <section class="card card--form" aria-labelledby="formTitle">
+      <header class="card__header">
+        <h1 class="card__title" id="formTitle">
+          <span class="card__emoji" aria-hidden="true">🌸</span>
+          Gửi ủng hộ mới
+        </h1>
+        <p class="card__subtitle">Nhập tên và số tiền, sau đó bấm lưu.</p>
+      </header>
+
+      <form class="form" id="entryForm" novalidate>
+        <div class="field">
+          <label class="field__label" for="nameInput">Tên người ủng hộ</label>
+          <input class="field__input" id="nameInput" name="name" type="text"
+                 autocomplete="name" enterkeyhint="next" maxlength="60"
+                 placeholder="Ví dụ: Nguyễn Văn A"
+                 aria-describedby="nameError">
+          <p class="field__error" id="nameError" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="amountInput">Số tiền</label>
+          <div class="field__group">
+            <input class="field__input field__input--amount" id="amountInput" name="amount"
+                   type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done"
+                   placeholder="0"
+                   aria-describedby="amountHint amountError">
+            <span class="field__suffix" aria-hidden="true">₫</span>
+          </div>
+          <p class="field__hint" id="amountHint">Chỉ nhập số, dấu chấm tự động thêm.</p>
+          <p class="field__error" id="amountError" role="alert"></p>
+        </div>
+
+        <button class="button button--primary button--block button--big" type="submit" id="submitBtn">
+          <span aria-hidden="true">🎉</span> Lưu ủng hộ
+        </button>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="dataTitle">
+      <header class="card__header card__header--tight">
+        <h2 class="card__title card__title--sm" id="dataTitle">Dữ liệu</h2>
+      </header>
+      <div class="action-row">
+        <button class="button button--ghost" id="exportBtn" type="button" disabled>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Xuất Excel
+        </button>
+        <button class="button button--danger" id="clearBtn" type="button" disabled>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+            <path d="M10 11v6M14 11v6M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Xóa toàn bộ
+        </button>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="listTitle">
+      <header class="card__header card__header--row">
+        <h2 class="card__title card__title--sm" id="listTitle">Danh sách ủng hộ</h2>
+        <span class="badge" id="manageCount">0</span>
+      </header>
+      <div class="manage-frame">
+        <ul class="manage-list" id="manageList"></ul>
+        <p class="empty-hint" id="manageEmpty">Chưa có ai ủng hộ.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <dialog class="dialog" id="confirmDialog" aria-labelledby="dialogTitle" aria-describedby="dialogDesc">
+    <form method="dialog" class="dialog__form">
+      <h2 class="dialog__title" id="dialogTitle">Xác nhận</h2>
+      <p class="dialog__text" id="dialogDesc"></p>
+      <div class="dialog__actions">
+        <button class="button button--ghost" type="submit" value="cancel">Hủy</button>
+        <button class="button button--danger" type="submit" value="confirm" id="dialogConfirm">Xác nhận</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast-region" id="toastRegion" role="status" aria-live="polite"></div>
+
+  <noscript>
+    <div class="noscript">Trang cần JavaScript để hoạt động.</div>
+  </noscript>
+
+</body>
+</html>
